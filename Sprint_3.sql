@@ -7,13 +7,12 @@
 ### Recorda mostrar el diagrama i realitzar una breu descripció d'aquest.
 -- Para crear la tabla credit_card
 CREATE TABLE IF NOT EXISTS credit_card (
-	id VARCHAR(15) PRIMARY KEY,
-	iban VARCHAR(255), 
+	id VARCHAR(20) PRIMARY KEY,
+	iban VARCHAR(50), 
 	pan VARCHAR(100),
-	pin VARCHAR(15),
-	cvv VARCHAR(15),
-	expiring_date VARCHAR(50)
-);
+	pin CHAR(4),
+	cvv CHAR(3),
+	expiring_date VARCHAR(50) );
     
 -- Para agregar la FOREIGN KEY
 ALTER TABLE transaction
@@ -72,8 +71,8 @@ WHERE id = "02C6201E-D90A-1859-B4EE-88D2986D3B02";
 ### Presenta la vista creada, ordenant les dades de major a menor mitjana de compra.
 CREATE VIEW VistaMarketing AS
 SELECT company_name, phone, country, AVG(amount) AS average
-FROM company
-JOIN transaction ON company.id = transaction.company_id
+FROM company AS c
+JOIN transaction AS t ON c.id = transaction.company_id
 GROUP BY company_id
 ORDER BY average DESC;
 
@@ -97,8 +96,6 @@ WHERE country = "Germany";
 -- Modificar la tabla credit_card
 ALTER TABLE credit_card
 ADD COLUMN fecha_actual DATE NULL DEFAULT NULL AFTER expiring_date,
-CHANGE COLUMN id id VARCHAR(20) NOT NULL,
-CHANGE COLUMN iban iban VARCHAR(50) NULL DEFAULT NULL,
 CHANGE COLUMN pin pin VARCHAR(4) NULL DEFAULT NULL,
 CHANGE COLUMN cvv cvv INT NULL DEFAULT NULL,
 CHANGE COLUMN expiring_date expiring_date VARCHAR(10) NULL DEFAULT NULL;
@@ -119,11 +116,11 @@ RENAME TO  data_user;
 ### Mostra els resultats de la vista, ordena els resultats de manera descendent en funció de la variable ID de transaction.
 -- Para crear la vista solicitada
 CREATE VIEW InformeTecnico AS
-SELECT transaction.id AS transaction_id, data_user.name, data_user.surname, credit_card.iban, company.company_name
-FROM transaction
-JOIN data_user ON data_user.id = transaction.user_id
-JOIN credit_card ON credit_card.id = transaction.credit_card_id
-JOIN company ON company.id = transaction.company_id
+SELECT t.id AS transaction_id, du.name, du.surname, cc.iban, c.company_name
+FROM transaction AS t
+JOIN data_user AS du ON du.id = t.user_id
+JOIN credit_card AS cc ON cc.id = t.credit_card_id
+JOIN company AS c ON c.id = t.company_id
 ORDER BY transaction_id DESC;
 
 -- Para ver el resultado de la vista creada
